@@ -72,4 +72,4 @@ def main(args):
 
 if __name__ == '__main__':
     args = build_argparser().parse_args()
-    main()
+    main(args)
