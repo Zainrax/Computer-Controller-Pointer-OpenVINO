@@ -10,7 +10,14 @@ Author: Patrick Baxter
 Date: 30/06/2020
 License: MIT
 """
+import os
 from argparse import ArgumentParser
+from input_feeder import InputFeeder
+from model_face_detection import Model_Face_Detection
+from model_gaze import Model_Gaze
+from model_head_pose import Model_Head_Pose
+from model_landmark import Model_Landmark
+
 
 def build_argparser():
     """
@@ -68,7 +75,28 @@ def build_argparser():
     return parser
 
 def main(args):
-    print(args.device)
+    device = args.device
+    extension = args.cpu_extension
+    input_path = args.input
+
+    if input_path.lower() == "cam":
+        input_image = InputFeeder("cam")
+    else:
+        if os.path.isfile(input_path):
+            input_image = InputFeeder("video", input_path)
+        else:
+            print("Invalid path to file used: {}".format(input_path))
+            exit(1)
+    fd_model = Model_Face_Detection()
+    fl_model = Model_Landmark()
+    g_model = Model_Gaze()
+    p_model = Model_Head_Pose()
+
+    fd_model.load_model(args.face_detection, extension, device)
+    fl_model.load_model(args.face_landmark, extension, device)
+    g_model.load_model(args.gaze_detection, extension, device)
+    p_model.load_model(args.pose_detection, extension, device)
+        
 
 if __name__ == '__main__':
     args = build_argparser().parse_args()
