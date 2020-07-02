@@ -13,6 +13,10 @@ class Model:
         self.plugin = None
         self.plugin_net = None
         self.network = None
+        self.input_name = None
+        self.input_shape = None
+        self.output_name = None
+        self.output_shape = None
 
     def load_model(self, model_xml, cpu_ext, device):
         self.plugin = IECore()
@@ -36,6 +40,10 @@ class Model:
         self.plugin_net = self.plugin.load_network(self.network,
                                                    device,
                                                    num_requests=1)
+        self.input_name = next(iter(self.network.inputs))
+        self.input_shape = self.network.inputs[self.input_name].shape
+        self.output_names = next(iter(self.network.outputs))
+        self.output_shape = self.network.outputs[self.output_names].shape
 
     def predict(self, image):
         raise NotImplementedError

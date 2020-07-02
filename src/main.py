@@ -11,6 +11,8 @@ Date: 30/06/2020
 License: MIT
 """
 import os
+import cv2
+
 from argparse import ArgumentParser
 from input_feeder import InputFeeder
 from model_face_detection import Model_Face_Detection
@@ -78,7 +80,7 @@ def main(args):
     device = args.device
     extension = args.cpu_extension
     input_path = args.input
-
+    prob = args.prob_threshold
     if input_path.lower() == "cam":
         input_image = InputFeeder("cam")
     else:
@@ -97,6 +99,14 @@ def main(args):
     g_model.load_model(args.gaze_detection, extension, device)
     p_model.load_model(args.pose_detection, extension, device)
         
+    input_image.load_data()
+    for flag, frame in input_image.next_batch():
+        if not flag:
+            break
+        pressed_key = cv2.waitKey(60)
+        # Get image crop of image from face detection
+        coords = fd_model.predict(frame, prob)
+
 
 if __name__ == '__main__':
     args = build_argparser().parse_args()
