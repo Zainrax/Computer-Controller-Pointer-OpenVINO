@@ -11,12 +11,11 @@ class Model_Face_Detection(Model):
     Class for the Face Detection Model.
     '''
     def predict(self, image, prob):
+        height, width, _ = image.shape
         processed_image = self.preprocess_input(image)       
-        return 0
-
-
-    def check_model(self):
-        raise NotImplementedError
+        outputs = self.plugin_net.infer({self.input_name:processed_image})
+        coords = self.preprocess_output(outputs,prob, height, width)
+        return coords
 
     def preprocess_input(self, image):
         # Add batch dimension shape: [1x3x384x672] - An input image in the format [BxCxHxW]
@@ -24,5 +23,15 @@ class Model_Face_Detection(Model):
         input_image = np.expand_dims(resized_image, axis=0).transpose((0,3,1,2))
         return input_image
 
-    def preprocess_output(self, outputs):
-        raise NotImplementedError
+    def preprocess_output(self, outputs, prob, h_scale, w_scale):
+        coords = []
+        outputs = outputs[self.output_names][0][0]
+        for _,_,conf,xmin,ymin,xmax,ymax in outputs:
+            if conf > prob:
+                coords.append([
+                    int(xmin * w_scale),
+                    int(ymin * h_scale),
+                    int(xmax * w_scale),
+                    int(ymax * h_scale)
+                    ])
+        return coords

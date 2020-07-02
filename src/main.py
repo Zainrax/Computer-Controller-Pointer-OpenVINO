@@ -105,7 +105,15 @@ def main(args):
             break
         pressed_key = cv2.waitKey(60)
         # Get image crop of image from face detection
-        coords = fd_model.predict(frame, prob)
+        coords = fd_model.predict(frame, prob)[0]
+        if len(coords) == 0:
+            print("No face found...")
+            if pressed_key == 27:
+                break
+            else:
+                continue
+        # Crop image [ymin:ymax, xmin:xmax]
+        cropped_image = frame[coords[1]:coords[3], coords[0]:coords[2]]
 
 
 if __name__ == '__main__':
