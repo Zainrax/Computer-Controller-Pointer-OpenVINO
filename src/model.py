@@ -3,6 +3,8 @@ This is a sample class for a model. You may choose to use it as-is or make any c
 This has been provided just to give you an idea of how to structure your model class.
 '''
 import os
+import cv2
+import numpy as np
 from openvino.inference_engine import IECore
 
 class Model:
@@ -52,7 +54,10 @@ class Model:
         raise NotImplementedError
 
     def preprocess_input(self, image):
-        raise NotImplementedError
+        resized_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
+        input_image = np.expand_dims(resized_image, axis=0).transpose((0,3,1,2))
+        return input_image
+
 
     def preprocess_output(self, outputs):
         raise NotImplementedError

@@ -116,8 +116,13 @@ def main(args):
         fd_coords = fd_coords[0]
         # Crop image [ymin:ymax, xmin:xmax]
         cropped_image = frame[fd_coords[1]:fd_coords[3], fd_coords[0]:fd_coords[2]]
-        #head_pose = p_model.predict(cropped_image)
+        yaw, pitch, roll = p_model.predict(cropped_image)
         left_eye, right_eye = fl_model.predict(cropped_image)
+        left_eye_img = cropped_image[left_eye[1]:left_eye[3], left_eye[0]:left_eye[2]]
+        right_eye_img = cropped_image[right_eye[1]:right_eye[3], right_eye[0]:right_eye[2]]
+
+        #Estimate gaze
+        gaze = g_model.predict(left_eye_img, right_eye_img, [yaw,pitch,roll])
 
 
 

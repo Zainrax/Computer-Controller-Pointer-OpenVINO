@@ -17,12 +17,6 @@ class Model_Face_Detection(Model):
         coords = self.preprocess_output(outputs,prob, height, width)
         return coords
 
-    def preprocess_input(self, image):
-        # Add batch dimension shape: [1x3x384x672] - An input image in the format [BxCxHxW]
-        resized_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
-        input_image = np.expand_dims(resized_image, axis=0).transpose((0,3,1,2))
-        return input_image
-
     def preprocess_output(self, outputs, prob, h_scale, w_scale):
         coords = []
         outputs = outputs[self.output_names][0][0]

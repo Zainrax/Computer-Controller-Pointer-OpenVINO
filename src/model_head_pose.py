@@ -6,13 +6,12 @@ from model import Model
 
 class Model_Head_Pose(Model):
     def predict(self, image):
-        raise NotImplementedError
-
-    def check_model(self):
-        raise NotImplementedError
-
-    def preprocess_input(self, image):
-        raise NotImplementedError
+        processed_image = self.preprocess_input(image)
+        outputs = self.plugin_net.infer({self.input_name: processed_image})
+        return self.preprocess_output(outputs)
 
     def preprocess_output(self, outputs):
-        raise NotImplementedError
+        yaw = outputs['angle_y_fc'][0][0]
+        pitch = outputs['angle_p_fc'][0][0]
+        roll = outputs['angle_r_fc'][0][0]
+        return yaw, pitch, roll
