@@ -19,6 +19,7 @@ from model_face_detection import Model_Face_Detection
 from model_gaze import Model_Gaze
 from model_head_pose import Model_Head_Pose
 from model_landmark import Model_Landmark
+from mouse_controller import MouseController
 
 
 def build_argparser():
@@ -77,6 +78,7 @@ def build_argparser():
     return parser
 
 def main(args):
+    mouse_controller = MouseController('medium','fast')
     device = args.device
     extension = args.cpu_extension
     input_path = args.input
@@ -100,9 +102,12 @@ def main(args):
     p_model.load_model(args.pose_detection, extension, device)
         
     input_image.load_data()
+    frame_count = 0
+
     for flag, frame in input_image.next_batch():
         if not flag:
             break
+        frame_count += 1
         pressed_key = cv2.waitKey(60)
         # Get image crop of image from face detection
         fd_coords = fd_model.predict(frame, prob)
@@ -120,10 +125,16 @@ def main(args):
         left_eye, right_eye = fl_model.predict(cropped_image)
         left_eye_img = cropped_image[left_eye[1]:left_eye[3], left_eye[0]:left_eye[2]]
         right_eye_img = cropped_image[right_eye[1]:right_eye[3], right_eye[0]:right_eye[2]]
-
+        if left_eye_img.shape != (20,20,3) or right_eye_img.shape != (20,20,3):
+            print("Could not find eye/s")
+            continue
         #Estimate gaze
-        gaze = g_model.predict(left_eye_img, right_eye_img, [yaw,pitch,roll])
-
+        mouse_x, mouse_y = g_model.predict(left_eye_img, right_eye_img, [yaw,pitch,roll])
+        cv2.imshow("Image",frame)
+        # Perfomance Dependacy
+        if frame_count % 5 == 0:
+            mouse_controller.move(mouse_x, mouse_y)
+        
 
 
 if __name__ == '__main__':

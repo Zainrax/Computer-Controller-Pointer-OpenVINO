@@ -3,7 +3,7 @@ This is a sample class for a model. You may choose to use it as-is or make any c
 This has been provided just to give you an idea of how to structure your model class.
 '''
 import os
-from math import cos, sin, degrees
+from math import cos, sin, pi
 from model import Model
 
 class Model_Gaze(Model):
@@ -27,13 +27,13 @@ class Model_Gaze(Model):
     def preprocess_output(self, outputs, roll):
         # Estimate x, y based on carthesian output of both eye vectors.
         output = outputs[self.output_names[0]][0]
+        degree = pi / 180
 
         # Thetha values
-        cos_theta = cos(roll*degrees(1))
-        sin_theta = sin(roll*degrees(1))
+        cos_theta = cos(roll*degree)
+        sin_theta = sin(roll*degree)
 
         # Intermediate values 
         mouse_x = output[0] * cos_theta + output[1] * sin_theta
         mouse_y = output[1] * cos_theta - output[0] * sin_theta
-
         return mouse_x, mouse_y
