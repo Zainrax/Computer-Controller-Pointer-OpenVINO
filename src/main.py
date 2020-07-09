@@ -12,6 +12,7 @@ License: MIT
 """
 import os
 import cv2
+import numpy as np
 
 from argparse import ArgumentParser
 from input_feeder import InputFeeder
@@ -75,6 +76,16 @@ def build_argparser():
                         "CPU, GPU, FPGA or MYRIAD is acceptable. Sample "
                         "will look for a suitable plugin for device "
                         "specified (CPU by default)")
+    parser.add_argument("-v",
+                        "--visual",
+                        required=False,
+                        action="store_true",
+                        help="Enable visualization on the intermediate models")
+    parser.add_argument("-nm",
+                        "--no_move",
+                        required=False,
+                        action="store_false",
+                        help="Disables the movement of the mouse")
     return parser
 
 def main(args):
@@ -136,9 +147,23 @@ def main(args):
             right_eye_img = left_eye_img 
         #Estimate gaze
         mouse_x, mouse_y = g_model.predict(left_eye_img, right_eye_img, [yaw,pitch,roll])
+        if args.visual:
+            # Face Outline
+            cv2.rectangle(frame, (fd_coords[0],fd_coords[1]),(fd_coords[2],fd_coords[3]),(0,255,100))
+            # Eye Outlines
+            size = 20
+            left_cornerx = left_eye[0] + fd_coords[0]
+            left_cornery = left_eye[1] + fd_coords[1]
+            left_eye = [left_cornerx, left_cornery, left_cornerx + size, left_cornery + size]
+            right_cornerx = right_eye[0] + fd_coords[0]
+            right_cornery = right_eye[1] + fd_coords[1]
+            right_eye = [right_cornerx, right_cornery, right_cornerx + size, right_cornery + size]
+            cv2.rectangle(frame, (left_eye[0],left_eye[1]),(left_eye[2],left_eye[3]),(0,10,200), thickness=4)
+            cv2.rectangle(frame, (right_eye[0],right_eye[1]),(right_eye[2],right_eye[3]),(0,10,200), thickness=4)
+
         cv2.imshow("Image",frame)
         # Perfomance Dependacy
-        if frame_count % 5 == 0:
+        if frame_count % 5 == 0 and args.no_move:
             mouse_controller.move(mouse_x, mouse_y)
         
 
