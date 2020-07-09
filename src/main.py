@@ -125,9 +125,15 @@ def main(args):
         left_eye, right_eye = fl_model.predict(cropped_image)
         left_eye_img = cropped_image[left_eye[1]:left_eye[3], left_eye[0]:left_eye[2]]
         right_eye_img = cropped_image[right_eye[1]:right_eye[3], right_eye[0]:right_eye[2]]
-        if left_eye_img.shape != (20,20,3) or right_eye_img.shape != (20,20,3):
-            print("Could not find eye/s")
+        if left_eye_img.shape != (20,20,3) and right_eye_img.shape != (20,20,3):
+            print("Could not find eyes...")
             continue
+        if left_eye_img.shape != (20,20,3):
+            print("Could not find left eye..")
+            left_eye_img = right_eye_img
+        elif right_eye_img.shape != (20,20,3):
+            print("Could not find right eye..")
+            right_eye_img = left_eye_img 
         #Estimate gaze
         mouse_x, mouse_y = g_model.predict(left_eye_img, right_eye_img, [yaw,pitch,roll])
         cv2.imshow("Image",frame)

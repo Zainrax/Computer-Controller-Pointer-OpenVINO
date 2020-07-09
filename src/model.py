@@ -47,17 +47,8 @@ class Model:
         self.output_names = next(iter(self.network.outputs))
         self.output_shape = self.network.outputs[self.output_names].shape
 
-    def predict(self, image):
-        raise NotImplementedError
-
-    def check_model(self):
-        raise NotImplementedError
-
     def preprocess_input(self, image):
         resized_image = cv2.resize(image, (self.input_shape[3], self.input_shape[2]))
         input_image = np.expand_dims(resized_image, axis=0).transpose((0,3,1,2))
         return input_image
 
-
-    def preprocess_output(self, outputs):
-        raise NotImplementedError
