@@ -38,6 +38,41 @@ python main.py -i <mp4 video file path/"cam"> \
 ![Inference](Inference.gif)
 
 ## Documentation
+### File Structure
+All python files can be found in src/ including
+- [main.py](src/main.py)
+- [model.py](src/model.py)
+- [model_face_detection.py](src/model_face_detection.py)
+- [model_gaze.py](src/model_gaze.py)
+- [model_head_pose.py](src/model_head_pose.py)
+- [model_landmark.py](src/model_landmark.py)
+- [mouse_controller.py](src/mouse_controller.py)
+### Arguments Available
+```
+  -h, --help            show this help message and exit
+  -fd FACE_DETECTION, --face_detection FACE_DETECTION
+                        Path to an xml file for the face detection model.
+  -fl FACE_LANDMARK, --face_landmark FACE_LANDMARK
+                        Path to an xml file for the face landmark model.
+  -g GAZE_DETECTION, --gaze_detection GAZE_DETECTION
+                        Path to an xml file for the gaze estimation model.
+  -p POSE_DETECTION, --pose_detection POSE_DETECTION
+                        Path to an xml file face pose detection model.
+  -i INPUT, --input INPUT
+                        Path to video file, or cam for Web Cam Usage.
+  -pt PROB_THRESHOLD, --prob_threshold PROB_THRESHOLD
+                        Probability threshold for detections filtering(0.5 by
+                        default)
+  -l CPU_EXTENSION, --cpu_extension CPU_EXTENSION
+                        MKLDNN (CPU)-targeted custom layers.Absolute path to a
+                        shared library with thekernels impl.
+  -d DEVICE, --device DEVICE
+                        Specify the target device to infer on: CPU, GPU, FPGA
+                        or MYRIAD is acceptable. Sample will look for a
+                        suitable plugin for device specified (CPU by default)
+  -v, --visual          Enable visualization on the intermediate models
+  -nm, --no_move        Disables the movement of the mouse
+```
 ### Software Architecture
 ![Architecture](Architechture.jpg)
 ### Logic Diagram
